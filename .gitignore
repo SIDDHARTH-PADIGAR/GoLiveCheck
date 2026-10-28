@@ -1,0 +1,9 @@
+.venv/
+.venv-spike/
+__pycache__/
+.pytest_cache/
+spike/
+reports/*
+!reports/sample_*.json
+!reports/sample_*.md
+!reports/.gitkeep
