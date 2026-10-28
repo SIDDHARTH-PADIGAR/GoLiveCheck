@@ -16,3 +16,12 @@
 - **Cons and risks accepted:** The spike measures only one phrase on one CPU, which is a feasibility check and not a benchmark.
 - **Business value:** It tells us before Phase 1 whether a measured number-accuracy claim for voice is realistic.
 - **Revisit when:** Phase 7 starts, or if the spike fails (then the voice path is skipped and the README says so).
+
+## D-003 · 2026-10-28
+- **Decision:** Phase 7 stays in scope. The spike passed, and the model is faster-whisper `tiny.en` with int8 on CPU.
+- **Context:** Piper and faster-whisper installed with plain pip on Windows 11, and the round-trip of one amount came back correct.
+- **Options considered:** Skip Phase 7; use a larger Whisper model.
+- **Pros:** A real measured number error rate for the voice path, from tools that are free.
+- **Cons and risks accepted:** One phrase proves feasibility, not accuracy. Whisper writes spoken numbers as digits, so the Phase 7 comparison must normalise both sides. `tiny.en` is the weakest model and will overstate errors compared with larger ones.
+- **Business value:** A lender can see a measured figure for how often amounts are misheard, instead of an assumption.
+- **Revisit when:** Phase 7 starts, or if the timed re-run shows ASR is too slow to batch.
