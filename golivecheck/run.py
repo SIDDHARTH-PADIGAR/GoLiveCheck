@@ -126,16 +126,6 @@ def cmd_run(args):
     for k, (p, n) in tally.items():
         print(f"  {k}: {p}/{n}" + ("" if p == n else "  <-- FAIL"))
 
-    tally = {}
-    for r in runs:
-        k = f"{r['scenario']}#{r['variant']}"
-        a = tally.setdefault(k, [0, 0])
-        a[0] += all(x["passed"] for x in r["findings"])
-        a[1] += 1
-    print("\nPass counts (any failure fails the gate):")
-    for k, (p, n) in tally.items():
-        print(f"  {k}: {p}/{n}" + ("" if p == n else "  <-- FAIL"))
-
     crit = [x for r in runs for x in r["findings"] if x["severity"] == "critical" and not x["passed"]]
     verdict = "DO NOT SHIP" if crit else "SHIP"
     report = {

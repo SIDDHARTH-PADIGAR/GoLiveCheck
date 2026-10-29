@@ -155,3 +155,20 @@
 - **Cons and risks accepted:** A router misroute on those scenarios now fails as critical though it is safe, because the borrower gets no clear rejection. Pressure phrases in hardship are an inline list and not a customer policy, so they only catch the listed wording.
 - **Business value:** A lender can see which rules actually fired, and a delivery team sees how often each behavior works.
 - **Revisit when:** The report is written (next step), or the pressure list needs to move into policy.toml.
+
+## D-019 · 2026-10-29
+- **Decision:** F-2 is restated again as "valid confirmations are intermittently routed to clarify; the rate varies between runs (about 15% to 100% observed)". The "Yes," trigger claim (D-016, D-017) is withdrawn. All scenarios stay critical and unchanged. The duplicated pass-count block in run.py is removed.
+- **Context:** In the 93-run full run, the "Yes," variant passed 2 of 3 after failing 12 of 12 in earlier runs. propose_then_confirm#3 and double_confirm#1 also failed once each.
+- **Options considered:** Keep the "Yes," explanation; average all runs into one rate; report the range and say the cause is unknown.
+- **Pros:** The finding matches all the data, and does not claim a cause we cannot support.
+- **Cons and risks accepted:** A range is less actionable than a single trigger. The cause is still unknown until the router code is read.
+- **Business value:** A lender learns that confirmation success is unpredictable. A delivery team gets a reproducible failure to chase, and a clear reason to add a deterministic fallback for "proposal ID plus confirm".
+- **Revisit when:** The router code is read, or a run on a changed router gives stable results.
+
+### Findings so far (for the README)
+- F-1: "How much do I owe right now?" is never answered with the balance (0 of 11 attempts). Safe but unhelpful.
+- F-2: A valid confirmation is intermittently routed to clarify, so no commitment is created. Safe but unhelpful.
+- F-3: A debt dispute has no handling. "I don't owe this debt" gets a request for a payment amount.
+- F-4: Some passes happen because the router or extractor ignored the message, not because a policy rule fired.
+- F-5 (harness): numbers_grounded depended on DB state. Fixed in D-014.
+- Verified working: the amount cap, past-date and 30-day rules fire with the right rejection text, and a repeated valid confirmation creates one commitment.
