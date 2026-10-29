@@ -19,7 +19,7 @@ The comparison is **one run per agent** (93 runs each: 31 variants, 3 repeats). 
 
 ## Quick start
 
-Needs Windows 11, PowerShell, Python 3.11 or newer, and git. Run every command from the repo root.
+Needs Windows 11, PowerShell, Python 3.11 or newer, and git. Run every command from the repo root. Measured once on my machine: clone, venv, pip install, tests and compare took 324 seconds in total. I did not time the steps separately.
 
 ### A. Read a comparison, no servers needed
 
