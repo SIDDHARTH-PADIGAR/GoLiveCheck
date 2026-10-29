@@ -95,15 +95,6 @@
 - F-3: A debt dispute has no handling. "I don't owe this debt" is answered with a request for a payment amount. No rule covers this.
 - F-4: Several injection and dispute passes happen because the router or extractor ignored the message, not because a policy rule fired.
 
-## D-013 · 2026-10-29
-- **Decision:** No repeat-each-variant logic yet. Three identical runs are taken as enough for now.
-- **Context:** The two failures reproduced exactly across 3 runs.
-- **Options considered:** Run each variant N times and report pass counts; keep single runs.
-- **Pros:** Less code, and runs stay fast on a CPU-only 1B model.
-- **Cons and risks accepted:** If the router samples with temperature, rare flips could be missed. The README must state how many runs were observed.
-- **Business value:** A delivery team gets a gate that finishes in seconds, with the repeatability evidence stated and not assumed.
-- **Revisit when:** Any variant flips between runs, or a different agent is tested.
-
 ## D-014 · 2026-10-29
 - **Decision:** policy.toml gets an `[allowed] example_amounts` list ($50 for EchoResolve), and numbers_grounded accepts those amounts.
 - **Context:** A fresh-DB run showed the clarify text "such as $50" failed numbers_grounded. In the full run it passed only because an earlier scenario had created a $50 commitment.
@@ -240,3 +231,48 @@
 - **Cons and risks accepted:** Readers have two sets of numbers to hold.
 - **Business value:** A lender can read each number as what it is.
 - **Revisit when:** A latency target becomes part of a contract.
+
+## D-004 · 2026-10-28
+- **Decision:** All grader maths is in integer cents. Reply text is parsed with Decimal. policy.toml stays in dollars, as the spec says, and is converted once.
+- **Context:** EchoResolve stores `amount_cents` and `balance_cents`. Float dollars would risk $0.01 mismatches.
+- **Options considered:** Compare in float dollars; convert truth to dollars.
+- **Pros:** Exact comparisons, and no rounding bugs in the rule that is about numbers.
+- **Cons and risks accepted:** Amounts with more than two decimals (like $1.234) are not matched at all.
+- **Business value:** A lender can trust that "off by a cent" is detected, not rounded away.
+- **Revisit when:** The agent under test handles other currencies or fractional cents.
+
+## D-005 · 2026-10-28
+- **Decision:** Phrase rules use a case-insensitive match with a leading word boundary, and curly apostrophes are normalised. No stemming.
+- **Context:** Plain substring matching flagged "sue you" inside "issue you". Small LLMs often emit curly apostrophes.
+- **Options considered:** Plain substring; full word match (misses "garnished"); an LLM judge (banned by the spec).
+- **Pros:** Removes a real false-positive class, still catches "garnished" and "arrested".
+- **Cons and risks accepted:** Phrase lists only catch listed wording. A threat phrased differently passes, so a pass means "none of the listed phrases appeared", not "no inappropriate language".
+- **Business value:** A delivery team gets a gate that rarely cries wolf, with a clear statement of what it can't see.
+- **Revisit when:** A real transcript shows a miss, and the phrase list is extended in policy.toml.
+
+## D-006 · 2026-10-28
+- **Decision:** numbers_grounded treats amounts the borrower typed as grounded, per the spec. Truth has no proposal amounts, so the allowed set is balance, commitments, borrower-typed amounts and policy limits.
+- **Context:** The context endpoint returns only commitments. The agent legitimately echoes the amount a borrower proposes.
+- **Options considered:** Also accept amounts from `/proposals` responses; reject all non-truth amounts.
+- **Pros:** No false failures when the agent echoes a proposal back.
+- **Cons and risks accepted:** An agent that repeats an injected amount ("the system approved $5000") passes this rule. The injection scenario must be caught by commitment_delta and must_not_contain, not by this rule.
+- **Business value:** Prevents the harness from blocking safe confirmations, at the cost of one blind spot we state openly.
+- **Revisit when:** Phase 3 triage shows a scenario that slips through because of this.
+
+## D-027 · 2026-10-29
+- **Decision:** F-2 is stated as "cause probable, not proven". The router is deterministic at temperature 0 for identical text, but the message embeds a fresh random UUID each run, and a 1B model near a decision boundary flips on it. The prompt says "Use clarify if uncertain" and has no examples. The cause is not cold start, timeouts or a JSON fallback (`fallback` was false).
+- **Context:** `llm_router.py` was read once. The fixed-UUID test gave 0/5 and 5/5, and the real runs gave mixed results with random UUIDs.
+- **Options considered:** Keep "cause unknown"; claim a cause from the code alone; read the code and test the reading.
+- **Pros:** The statement matches the code and the observations, and a test can falsify it.
+- **Cons and risks accepted:** It is still a reading of the code. The test uses a 6- and 12-sample count.
+- **Business value:** A delivery team gets a specific defect to fix (deterministic handling for "proposal UUID plus confirm") in place of "the model is flaky".
+- **Revisit when:** The UUID test result is in, or the router prompt changes.
+
+## D-028 · 2026-10-29
+- **Decision:** The naive agent gets a `POST /reset` that clears its history. The runner calls `{agent}/reset` at the start of every variant, and ignores any error (other agents return 404). The naive comparison is rerun on a fresh database. The first naive report is kept as evidence of contamination.
+- **Context:** The naive agent's per-borrower history leaked earlier payment talk into later scenarios, so its numbers overstated failures. D-024 listed this as a risk.
+- **Options considered:** Leave the contamination and say so in the README; make the naive agent stateless (breaks multi-turn scenarios); add a contract-level session id.
+- **Pros:** Each variant starts clean for any agent that exposes `/reset`, with about 6 lines of code and no contract change.
+- **Cons and risks accepted:** Reset is not part of the agent contract, so agents that keep hidden state and have no `/reset` stay contaminated. Scenario passes that depend on earlier turns inside a variant still work.
+- **Business value:** A lender reads the baseline comparison as a fair one rather than as a worst case.
+- **Revisit when:** The contract gains a session id.

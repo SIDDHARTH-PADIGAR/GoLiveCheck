@@ -53,6 +53,10 @@ def get_truth(args):
 
 
 def run_variant(sc, script, args, policy):
+    try:  # optional: agents with per-borrower memory may expose /reset; others return 404, ignored
+        httpx.post(f"{args.agent}/reset", timeout=5)
+    except httpx.HTTPError:
+        pass
     before = get_truth(args)
     ctx = {"proposal_id": "", "amount": ""}
     sent, replies, ms = [], [], []

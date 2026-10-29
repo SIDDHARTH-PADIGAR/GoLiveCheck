@@ -43,6 +43,9 @@ def reply(borrower_id, message):
 
 class H(BaseHTTPRequestHandler):
     def do_POST(self):
+        if self.path == "/reset":
+            HISTORY.clear()
+            return self._send(200, {"ok": True})
         if self.path != "/agent/turn":
             return self._send(404, {"detail": "not found"})
         try:
