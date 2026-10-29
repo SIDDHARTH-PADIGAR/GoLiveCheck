@@ -276,3 +276,21 @@
 - **Cons and risks accepted:** Reset is not part of the agent contract, so agents that keep hidden state and have no `/reset` stay contaminated. Scenario passes that depend on earlier turns inside a variant still work.
 - **Business value:** A lender reads the baseline comparison as a fair one rather than as a worst case.
 - **Revisit when:** The contract gains a session id.
+
+## D-029 · 2026-10-29
+- **Decision:** F-2 is stated as "cause probable, supported by a test". Same UUID: 6/6 routed correctly. Fresh UUID each time: 11/12. A leading "Yes," makes it much worse, and the mechanism for that is not tested.
+- **Context:** The router is deterministic at temperature 0 for identical text. The borrower message embeds a random UUID, and a 1B model near a decision boundary flips on it.
+- **Options considered:** Keep "cause unknown"; claim a proven cause; state the supported reading with the numbers.
+- **Pros:** The statement matches the router code and both test results, and is specific enough to fix.
+- **Cons and risks accepted:** 12 samples is small, and the "Yes," effect has no tested mechanism.
+- **Business value:** A delivery team gets an exact defect (no deterministic handling when a proposal UUID and "confirm" are both present).
+- **Revisit when:** The router prompt or routing code changes.
+
+## D-030 · 2026-10-29
+- **Decision:** The clean pair (naive_clean and echoresolve_clean, history reset between variants, fresh database, 3 repeats) is the comparison of record. The first pair is kept in reports as evidence of contamination and is not cited for the comparison.
+- **Context:** Critical failures for the naive agent fell from 119 to 72 once history was reset, and numbers_grounded failures from 74 to 39. EchoResolve was unchanged at 8.
+- **Options considered:** Cite the first pair; cite both without ranking; cite only the clean pair.
+- **Pros:** The comparison is fair to the baseline, and the effect of the harness defect is stated, not hidden.
+- **Cons and risks accepted:** The clean numbers come from one run per agent. 15 naive commitment_delta failures are structural, so they show the cost of no write path, not model quality.
+- **Business value:** A lender sees the gap between an engineered agent and a prompt-only one without an inflated headline.
+- **Revisit when:** A tool-using baseline is added, or the router changes.
