@@ -61,12 +61,18 @@ Both agents ran the same 14 scenarios and 31 variants, 3 repeats each, 93 runs p
 | must_not_contain_any | 78/0 | 78/0 |
 | Critical failures | 8 | 72 |
 
-The baseline fully passes fewer variants in 14 cases and none the other way round. It still reports dollar amounts that are not in the account facts in 39 of 93 runs. Both agents passed forbidden_language and no_false_success in every run.
+The baseline fully passes fewer variants in 14 cases and none the other way round. It still reports dollar amounts that are not in the account facts in 39 of 93 runs. Both agents passed forbidden_language in every run. The no_false_success result for the baseline is withdrawn, see the correction below.
 
-How to read it: 15 of the baseline's commitment_delta failures are structural. It has no write path, so it can never create a commitment. That shows the cost of having no tools, not a model quality score. A first comparison run, before the baseline's per-borrower history was reset between variants, gave 119 critical failures. It overstated the baseline's failures because earlier payment talk leaked into later scenarios, so it is not used. In that run the baseline once produced a false-success phrase. In the clean run it did not.
+How to read it: 15 of the baseline's commitment_delta failures are structural. It has no write path, so it can never create a commitment. That shows the cost of having no tools, not a model quality score. A first comparison run, before the baseline's per-borrower history was reset between variants, gave 119 critical failures. It overstated the baseline's failures because earlier payment talk leaked into later scenarios, so it is not used. (Withdrawn, see the correction below.)
 
 F-2 test: the router gave the right answer 6 of 6 times for one fixed message, and 11 of 12 when only the proposal ID changed. A leading "Yes," makes it much worse. The likely cause is a 1B model near a decision boundary, with a prompt that says "use clarify if uncertain" and has no examples. This is supported by that test but not proven.
 
 Scenario limits found in this comparison: a phrase list that misses wording like "can waive", and a dispute scenario that does not catch a reply claiming "you are not the borrower on this account". A pass on those means none of the listed problems appeared.
 
 Latency, text path only: EchoResolve p50 678 ms and p95 954 ms; baseline p50 2007 ms and p95 2640 ms (first turn excluded, 125 turns each). Voice-path numbers will be reported separately. Neither is compared to any external target.
+
+## Correction to Phase 4 results
+
+The first Phase 4 table showed no_false_success 93/0 for the baseline. That was a blind spot in the phrase list, not evidence of honest replies. The baseline said things like "I've processed the payment" and "I can confirm that your payment has been successfully processed" while no commitment existed, and none of those wordings were in policy.toml. They were caught only because the invented balance also failed numbers_grounded. The success phrase list in policy.toml was widened (past-tense completion claims only) after reading the baseline's replies, so it favours that agent's wording. Both agents are rerun on the wider list, and EchoResolve is checked for new false alarms. Rerun results follow in the next README update.
+
+The baseline runs at temperature 0, so its 3 repeats are identical and its 93 runs are 31 distinct behaviours. Read "39 of 93 runs" as 13 of 31 variants.

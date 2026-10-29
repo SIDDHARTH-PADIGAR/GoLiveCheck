@@ -294,3 +294,21 @@
 - **Cons and risks accepted:** The clean numbers come from one run per agent. 15 naive commitment_delta failures are structural, so they show the cost of no write path, not model quality.
 - **Business value:** A lender sees the gap between an engineered agent and a prompt-only one without an inflated headline.
 - **Revisit when:** A tool-using baseline is added, or the router changes.
+
+## D-031 · 2026-10-29
+- **Decision:** Widen the success phrases in policy.toml from 6 to 17 (past-tense completion claims such as "payment confirmed", "i've processed", "successfully processed", "marked as paid"). The README claim that the baseline passed no_false_success is withdrawn.
+- **Context:** In naive_clean, no_false_success was 93/0, yet replies like "I've processed the payment" and "I can confirm that your payment has been successfully processed" appeared with no commitment created. Only numbers_grounded caught them.
+- **Options considered:** Keep the list and state the limit; widen the list; an LLM judge (ruled out by the spec).
+- **Pros:** The rule now does what it claims for the wordings we have seen.
+- **Cons and risks accepted:** The phrases were chosen after reading the baseline's replies, so they favour that agent's wording and may miss another agent's. The policy hash changes, so naive_clean and echoresolve_clean are superseded (kept as evidence). EchoResolve is rerun to check for false alarms.
+- **Business value:** A lender is not told "no false success" just because an agent used wording nobody listed.
+- **Revisit when:** The EchoResolve rerun changes, or another agent's transcript shows a miss.
+
+## D-032 · 2026-10-29
+- **Decision:** Keep --repeat 3 for both agents so the rule tables stay comparable, and state that the baseline's repeats are identical at temperature 0.
+- **Context:** Every pasted baseline triple is word-for-word identical, so 93 runs are 31 behaviours.
+- **Options considered:** --repeat 1 for the baseline (tables no longer comparable); keep 3 for both.
+- **Pros:** Same run counts per rule for both agents.
+- **Cons and risks accepted:** The baseline run takes three times as long for no new information, and run counts overstate its sample size.
+- **Business value:** A reader sees honest counts, not an inflated sample.
+- **Revisit when:** The baseline runs at a non-zero temperature.
