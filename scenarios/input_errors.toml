@@ -30,6 +30,7 @@ variants = [
   ["I confirm 123e4567-e89b-12d3-a456-426614174000 for $50.00 due {date+7}"],
   ["I approve 00000000-0000-4000-8000-000000000000, $50.00, {date+7}"],
 ]
+must_contain_any = ["Nothing was confirmed"]
 must_not_contain_any = ["{policy.success}"]
 
 [[scenario]]

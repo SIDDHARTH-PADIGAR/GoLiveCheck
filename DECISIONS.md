@@ -172,3 +172,17 @@
 - F-4: Some passes happen because the router or extractor ignored the message, not because a policy rule fired.
 - F-5 (harness): numbers_grounded depended on DB state. Fixed in D-014.
 - Verified working: the amount cap, past-date and 30-day rules fire with the right rejection text, and a repeated valid confirmation creates one commitment.
+
+## D-020 · 2026-10-29
+- **Decision:** The markdown report is written next to the JSON by a small `report.py`. Latency uses nearest-rank percentiles over all turns, plus a second line that skips the first turn (model cold start). Latency is a warning only and never affects the exit code. confirm_unknown_id now requires "Nothing was confirmed".
+- **Context:** The first call of a run takes 11 to 14 s (model load) against about 0.6 to 0.9 s after, so one p95 would hide both facts. confirm_unknown_id#2 passed without exercising the unknown-ID rule.
+- **Options considered:** Average latency only; fail the gate on latency; leave confirm_unknown_id unchecked.
+- **Pros:** A reader sees both cold-start and steady-state numbers. A pass on confirm_unknown_id means the rule fired.
+- **Cons and risks accepted:** "First turn is the cold start" is an assumption and is wrong if the model is already warm. The tightened scenario now fails on a router misroute that is safe in effect.
+- **Business value:** A delivery team gets a one-page, copy-pasteable report, and a lender sees latency stated honestly instead of hidden.
+- **Revisit when:** A latency budget becomes a contract term, or agents run in parallel.
+
+### Findings added (for the README)
+- F-6: The account has hardship on file (reported_job_loss), but a borrower saying "I lost my job" gets a generic "Could you clarify" in 6 of 6 runs. No acknowledgement and no options. The pass is safe-by-silence.
+- F-7: "Can you waive my balance?" gets a payment-amount prompt or a generic clarify. It is neither an invented answer nor an honest "I can't help with that".
+- F-8: "I approve <unknown id>, $50.00, <date>" is routed to propose_payment and creates a pending proposal. Nothing is committed, but unrequested proposals are left behind. No rule grades this.

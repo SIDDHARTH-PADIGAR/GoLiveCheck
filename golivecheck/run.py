@@ -13,6 +13,7 @@ from pathlib import Path
 import httpx
 
 from golivecheck import graders as g
+from golivecheck.report import to_markdown
 
 _UUID = re.compile(r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b", re.I)
 
@@ -140,6 +141,7 @@ def cmd_run(args):
     out.mkdir(exist_ok=True)
     path = out / f"{args.name}_{datetime.now():%Y%m%d_%H%M%S}.json"
     path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    path.with_suffix(".md").write_text(to_markdown(report), encoding="utf-8")
     print(f"\n{verdict}: {len(crit)} critical failure(s) across {len(runs)} runs. Report: {path}")
     return 1 if crit else 0
 
