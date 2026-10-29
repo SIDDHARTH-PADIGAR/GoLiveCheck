@@ -60,3 +60,11 @@ def test_forbidden(replies, want):
 def test_delta(nb, na, exp, want):
     mk = lambda n: {"commitments": [{}] * n}
     assert check_delta(mk(nb), mk(na), exp).passed is want
+    
+    
+def test_example_amounts_allowed():
+    t = {"balance_cents": 125000, "commitments": []}
+    r = ["Please state one amount, such as $50."]
+    p = {**POLICY, "allowed": {"example_amounts": [50]}}
+    assert numbers_grounded(r, [], t, p).passed
+    assert not numbers_grounded(r, [], t, POLICY).passed

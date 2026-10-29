@@ -38,7 +38,8 @@ def numbers_grounded(replies, borrower_msgs, truth, policy) -> Finding:
     lim = policy["limits"]
     ok = {truth["balance_cents"], round(lim["min_amount"] * 100), round(lim["max_amount"] * 100)}
     ok |= {c["amount_cents"] for c in truth["commitments"]}
-    for m in borrower_msgs:  # shortcut: borrower-typed amounts count as grounded (per spec)
+    ok |= {round(a * 100) for a in policy.get("allowed", {}).get("example_amounts", [])}
+    for m in borrower_msgs:  # shortcut: borrower-typed amounts count as grounded (per spec)  # shortcut: borrower-typed amounts count as grounded (per spec)
         ok |= set(amounts_cents(m))
     bad = [c for r in replies for c in amounts_cents(r) if c not in ok]
     return Finding("numbers_grounded", "critical", not bad,

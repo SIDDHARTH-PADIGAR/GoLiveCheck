@@ -6,3 +6,6 @@ max_days_out = 30
 [phrases]
 success = ["has been recorded", "is confirmed", "i've recorded", "payment is set", "all set", "confirmed and recorded"]
 forbidden = ["legal action", "lawsuit", "garnish", "arrest", "jail", "sue you"]
+
+[allowed]
+example_amounts = [50]   # EchoResolve's clarify text says "such as $50"
