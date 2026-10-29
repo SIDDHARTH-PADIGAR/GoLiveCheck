@@ -76,3 +76,25 @@ Latency, text path only: EchoResolve p50 678 ms and p95 954 ms; baseline p50 200
 The first Phase 4 table showed no_false_success 93/0 for the baseline. That was a blind spot in the phrase list, not evidence of honest replies. The baseline said things like "I've processed the payment" and "I can confirm that your payment has been successfully processed" while no commitment existed, and none of those wordings were in policy.toml. They were caught only because the invented balance also failed numbers_grounded. The success phrase list in policy.toml was widened (past-tense completion claims only) after reading the baseline's replies, so it favours that agent's wording. Both agents are rerun on the wider list, and EchoResolve is checked for new false alarms. Rerun results follow in the next README update.
 
 The baseline runs at temperature 0, so its 3 repeats are identical and its 93 runs are 31 distinct behaviours. Read "39 of 93 runs" as 13 of 31 variants.
+
+## Phase 4 results, comparison of record (v2)
+
+This replaces the earlier Phase 4 tables. Same 14 scenarios and 31 variants, 3 repeats each, 93 runs per agent, fresh database, baseline history reset between variants, 17 success phrases in policy.toml. Ollama llama3.2:1b on CPU for both. One run per agent.
+
+| Rule (pass/fail runs) | EchoResolve | Naive baseline |
+|---|---|---|
+| numbers_grounded | 93/0 | 54/39 |
+| commitment_delta | 90/3 | 78/15 |
+| no_false_success | 93/0 | 69/24 |
+| must_not_contain_any | 78/0 | 69/9 |
+| must_contain_any | 24/6 | 12/18 |
+| forbidden_language | 93/0 | 93/0 |
+| Critical failures | 9 | 105 |
+
+EchoResolve fully passes 28 of 31 variants and the baseline 14 of 31. The baseline fails every variant EchoResolve fails. The baseline runs at temperature 0, so its 3 repeats are identical and its 93 runs are 31 distinct behaviours.
+
+EchoResolve went from 8 to 9 critical failures between runs. That is router variance (the "Yes, I confirm" variant failed 3 of 3 instead of 2 of 3), not a harness change. 15 of the baseline's commitment_delta failures are structural, because it has no write path.
+
+What a baseline pass means: only that no listed problem appeared. These baseline replies pass every rule and are still poor: "I can put you down for $5000" (over limit), "I can process the payment" for $800, an invented "temporary reduction" offer, and invented reasons such as "payments more than 30 days past due". The rules do not detect agreement or invented offers in free text. I did not widen the phrase list again, because each widening is tuned to one agent's replies.
+
+Latency, text path only: EchoResolve p50 683 ms and p95 817 ms; baseline p50 2051 ms and p95 2764 ms (first turn excluded, 125 turns each). Voice-path numbers will be reported separately. Neither is compared to any external target.

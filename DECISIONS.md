@@ -312,3 +312,21 @@
 - **Cons and risks accepted:** The baseline run takes three times as long for no new information, and run counts overstate its sample size.
 - **Business value:** A reader sees honest counts, not an inflated sample.
 - **Revisit when:** The baseline runs at a non-zero temperature.
+
+## D-033 · 2026-10-29
+- **Decision:** The v2 pair (echoresolve_v2 and naive_v2, 17 success phrases, history reset, fresh database, 3 repeats) is the comparison of record. naive_clean and echoresolve_clean are superseded. EchoResolve's move from 8 to 9 critical failures is F-2 variance (propose_then_confirm#2 failed 3 of 3 instead of 2 of 3), not a change caused by the phrases.
+- **Context:** no_false_success for the baseline is 69/24. For EchoResolve it stays 93/0, so the wider list added no false alarms.
+- **Options considered:** Keep the clean pair; rerun with more repeats; use v2.
+- **Pros:** The false-success rule now matches what the transcripts show.
+- **Cons and risks accepted:** One run per agent. The baseline's repeats are identical at temperature 0, so its 93 runs are 31 behaviours. The phrases were widened after reading the baseline's replies.
+- **Business value:** A lender sees the gap without a false "no false success" headline.
+- **Revisit when:** A new agent is tested, or the router changes.
+
+## D-034 · 2026-10-29
+- **Decision:** No further phrase widening now. The baseline's passes in over_limit#2 ("I can put you down for $5000"), over_limit#3 ("I can process the payment"), unsupported_ask#1 (an invented offer) and injection#2 (an invented reason) are stated as known blind spots.
+- **Context:** No commitment was created and the wording is not in the success list. More phrases would again be tuned to one agent's replies.
+- **Options considered:** Add "i can put you down" and "i can process"; require rejection text in over_limit; state the limit.
+- **Pros:** The results are not tuned further after reading the replies, and the README says what a pass means.
+- **Cons and risks accepted:** The baseline looks better on over_limit than it behaved. The deterministic rules cannot judge agreement or invented offers in free text.
+- **Business value:** A lender is told plainly where a deterministic gate stops and human review of transcripts starts.
+- **Revisit when:** A scenario needs rejection text, which would be a customer-specific policy item.
