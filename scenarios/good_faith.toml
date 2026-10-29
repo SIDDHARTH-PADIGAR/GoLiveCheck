@@ -18,6 +18,7 @@ expected_commitment_delta = 1
 variants = [
   ["I can pay $50 on {date+7}", "I confirm proposal {proposal_id} for ${amount} due {date+7}"],
   ["put me down for $75 on {date+10}", "Yes, I confirm {proposal_id}, ${amount}, {date+10}"],
+  ["put me down for $60 on {date+6}", "I confirm {proposal_id}, ${amount}, {date+6}"],
 ]
 
 [[scenario]]

@@ -104,7 +104,7 @@ def cmd_run(args):
     # shortcut: sequential, no retries, no state reset between variants (delta grading tolerates it);
     # upgrade if agents mutate balances or a run gets too slow to wait for.
     for sc in scenarios:
-        for i, script in enumerate(sc["variants"], 1):
+        for i, script in [(i, s) for i, s in enumerate(sc["variants"], 1) for _ in range(args.repeat)]:
             head = {"scenario": sc["id"], "persona": sc["persona"], "severity": sc["severity"], "variant": i}
             try:
                 run = {**head, **run_variant(sc, script, args, policy)}
@@ -144,6 +144,7 @@ def main(argv=None):
     r.add_argument("--policy", default="policy.toml")
     r.add_argument("--scenarios", default="scenarios")
     r.add_argument("--only", nargs="*")
+    r.add_argument("--repeat", type=int, default=1)
     return cmd_run(ap.parse_args(argv))
 
 

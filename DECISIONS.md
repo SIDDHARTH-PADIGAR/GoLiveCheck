@@ -119,3 +119,30 @@
 - F-3: A debt dispute has no handling. "I don't owe this debt" gets a request for a payment amount.
 - F-4: Several injection and dispute passes happen because the router or extractor ignored the message, not because a policy rule fired.
 - F-5 (harness): numbers_grounded depended on DB state. Fixed in D-014, and runs should start on a fresh DB.
+
+## D-015 · 2026-10-29
+- **Decision:** Add a `--repeat N` flag (default 1) that runs every variant N times. Any critical failure in any repeat fails the gate. F-2 is revised to "valid confirmation is routed to clarify intermittently".
+- **Context:** `propose_then_confirm#2` failed in 3 consecutive runs and passed in the 4th, so D-013's assumption that the router is repeatable was wrong.
+- **Options considered:** Keep single runs; add per-variant pass-rate reporting; read the router code to find the sampling settings.
+- **Pros:** One-line change, and it turns "flaky" into a measured count. A single lucky run can no longer produce SHIP.
+- **Cons and risks accepted:** Runs take N times longer, and repeats leave extra commitments in the DB (the delta grading tolerates this). Reports list repeats as separate runs, not as pass rates.
+- **Business value:** A lender sees "failed 2 of 5 attempts" instead of a verdict that depends on luck.
+- **Revisit when:** The pass-rate display is needed in the Phase 3 report, or the router is made deterministic.
+
+## D-016 · 2026-10-29
+- **Decision:** F-2 is rewritten from "intermittent" to "a leading 'Yes,' makes the router classify a valid confirmation as clarify". The scenario is not changed and stays critical. A 3rd variant without "Yes," is added to propose_then_confirm.
+- **Context:** The repeat run failed `propose_then_confirm#2` 4 of 5 times. A direct router test showed 0/5 confirm_payment for both "Yes," phrasings and 5/5 for both phrasings without it.
+- **Options considered:** Remove "Yes," from the variant so it passes; downgrade to warn; keep the failure and add a passing control variant.
+- **Pros:** The report shows exactly which wording breaks and which works, and the failing variant keeps its real-world realism.
+- **Cons and risks accepted:** One earlier run passed variant 2 and I have no explanation for it. The router test used a made-up UUID and 5 samples per phrasing, so the rate is approximate.
+- **Business value:** A delivery team gets a concrete, reproducible defect to fix in the routing layer, since borrowers who say "Yes, I confirm" are silently not confirmed.
+- **Revisit when:** The router or its prompt changes, or a repeat run shows variant 2 passing consistently.
+
+## D-017 · 2026-10-29
+- **Decision:** F-2 is corrected. "A leading 'Yes,' is the trigger" becomes "'Yes,' makes the failure near-certain; without it the router still fails about 1 in 6". Scenarios are unchanged. Confirm-turn scenarios will be run with --repeat 5.
+- **Context:** The control variant 3 ("I confirm <uuid>, $60.00, <date>") failed 1 of 3 repeats, although the direct router test gave 5 of 5 for the same shape. The "Yes," variants failed 3 of 3, after 0 of 5 in the direct test.
+- **Options considered:** Treat variant 3 as noise; change the claim; swap the control for another phrasing.
+- **Pros:** The finding matches the data, and the report shows a rate and not a slogan.
+- **Cons and risks accepted:** The rates come from small samples (6 and 12 runs) and are approximate. The cause of the intermittent failure is still unknown, because I haven't read `llm_router.py`.
+- **Business value:** A delivery team learns that confirmations are unreliable with any phrasing, not just one, so the routing layer needs a deterministic fallback for messages that contain a proposal ID and the word confirm.
+- **Revisit when:** The router code is read, or the routing layer is changed.
