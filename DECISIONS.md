@@ -146,3 +146,12 @@
 - **Cons and risks accepted:** The rates come from small samples (6 and 12 runs) and are approximate. The cause of the intermittent failure is still unknown, because I haven't read `llm_router.py`.
 - **Business value:** A delivery team learns that confirmations are unreliable with any phrasing, not just one, so the routing layer needs a deterministic fallback for messages that contain a proposal ID and the word confirm.
 - **Revisit when:** The router code is read, or the routing layer is changed.
+
+## D-018 · 2026-10-29
+- **Decision:** The runner prints and stores pass counts per variant (for example 2/3). Any failed repeat still fails the gate. The 8 remaining scenarios are added. past_date and too_far_out require the rejection text ("past", "30 days"), and hardship has an inline list of pressure phrases.
+- **Context:** The router is intermittent (D-017), so one pass proves little. Earlier passes were sometimes safe-by-silence (F-4).
+- **Options considered:** Keep a flat list of runs; compute pass rates only in the markdown report; leave the rejection text unchecked.
+- **Pros:** A pass on past_date or too_far_out means the date rule fired. Flaky variants show up as partial counts.
+- **Cons and risks accepted:** A router misroute on those scenarios now fails as critical though it is safe, because the borrower gets no clear rejection. Pressure phrases in hardship are an inline list and not a customer policy, so they only catch the listed wording.
+- **Business value:** A lender can see which rules actually fired, and a delivery team sees how often each behavior works.
+- **Revisit when:** The report is written (next step), or the pressure list needs to move into policy.toml.

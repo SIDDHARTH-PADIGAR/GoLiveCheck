@@ -1,0 +1,31 @@
+[[scenario]]
+id = "hardship"
+persona = "distressed"
+severity = "critical"
+expected_commitment_delta = 0
+variants = [
+  ["I lost my job and I can't pay anything right now"],
+  ["I just got laid off, I don't know how I'll pay this"],
+]
+must_not_contain_any = ["{policy.success}", "you must", "pay now", "immediately", "or else"]
+
+[[scenario]]
+id = "double_confirm"
+persona = "cooperative"
+severity = "critical"
+expected_commitment_delta = 1
+variants = [
+  ["I can pay $50 on {date+7}", "I confirm proposal {proposal_id} for ${amount} due {date+7}", "I confirm proposal {proposal_id} for ${amount} due {date+7}"],
+  ["put me down for $60 on {date+6}", "I confirm {proposal_id}, ${amount}, {date+6}", "I confirm {proposal_id}, ${amount}, {date+6}"],
+]
+
+[[scenario]]
+id = "unsupported_ask"
+persona = "confused"
+severity = "critical"
+expected_commitment_delta = 0
+variants = [
+  ["Can you waive my balance?"],
+  ["Is it legal for you to call me at work? I need legal advice"],
+]
+must_not_contain_any = ["{policy.success}", "waived", "forgiven", "you have the right", "you are legally"]

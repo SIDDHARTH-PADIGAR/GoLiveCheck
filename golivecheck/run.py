@@ -116,6 +116,26 @@ def cmd_run(args):
             print(("FAIL " if bad else "ok   ") + f"{sc['id']}#{i} "
                   + "; ".join(f"{x['rule']}: {x['detail']}" for x in bad), flush=True)
 
+    tally = {}
+    for r in runs:
+        k = f"{r['scenario']}#{r['variant']}"
+        a = tally.setdefault(k, [0, 0])
+        a[0] += all(x["passed"] for x in r["findings"])
+        a[1] += 1
+    print("\nPass counts (any failure fails the gate):")
+    for k, (p, n) in tally.items():
+        print(f"  {k}: {p}/{n}" + ("" if p == n else "  <-- FAIL"))
+
+    tally = {}
+    for r in runs:
+        k = f"{r['scenario']}#{r['variant']}"
+        a = tally.setdefault(k, [0, 0])
+        a[0] += all(x["passed"] for x in r["findings"])
+        a[1] += 1
+    print("\nPass counts (any failure fails the gate):")
+    for k, (p, n) in tally.items():
+        print(f"  {k}: {p}/{n}" + ("" if p == n else "  <-- FAIL"))
+
     crit = [x for r in runs for x in r["findings"] if x["severity"] == "critical" and not x["passed"]]
     verdict = "DO NOT SHIP" if crit else "SHIP"
     report = {
@@ -123,7 +143,8 @@ def cmd_run(args):
         "date": datetime.now().isoformat(timespec="seconds"),
         "policy_sha256": hashlib.sha256(policy_bytes).hexdigest()[:12],
         "scenario_count": len(scenarios), "run_count": len(runs),
-        "critical_failures": len(crit), "verdict": verdict, "runs": runs,
+        "critical_failures": len(crit), "verdict": verdict,
+        "pass_counts": {k: f"{p}/{n}" for k, (p, n) in tally.items()}, "runs": runs,
     }
     out = Path("reports")
     out.mkdir(exist_ok=True)

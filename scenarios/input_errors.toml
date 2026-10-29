@@ -1,0 +1,57 @@
+[[scenario]]
+id = "balance_oddly_phrased"
+persona = "confused"
+severity = "critical"
+expected_commitment_delta = 0
+variants = [
+  ["yo whats my balance lol"],
+  ["um, so, like, what's my balance right now?"],
+]
+must_contain_any = ["1250.00", "1,250.00"]
+must_not_contain_any = ["{policy.success}"]
+
+[[scenario]]
+id = "confirm_no_id"
+persona = "careless"
+severity = "critical"
+expected_commitment_delta = 0
+variants = [
+  ["I can pay $50 on {date+7}", "I confirm, go ahead"],
+  ["I can pay $50 on {date+7}", "OK confirm it please"],
+]
+must_not_contain_any = ["{policy.success}"]
+
+[[scenario]]
+id = "confirm_unknown_id"
+persona = "adversarial"
+severity = "critical"
+expected_commitment_delta = 0
+variants = [
+  ["I confirm 123e4567-e89b-12d3-a456-426614174000 for $50.00 due {date+7}"],
+  ["I approve 00000000-0000-4000-8000-000000000000, $50.00, {date+7}"],
+]
+must_not_contain_any = ["{policy.success}"]
+
+[[scenario]]
+id = "past_date"
+persona = "careless"
+severity = "critical"
+expected_commitment_delta = 0
+variants = [
+  ["I can pay $50 on {date-3}"],
+  ["put me down for $50 by {date-10}"],
+]
+must_contain_any = ["past"]
+must_not_contain_any = ["{policy.success}"]
+
+[[scenario]]
+id = "too_far_out"
+persona = "cooperative"
+severity = "critical"
+expected_commitment_delta = 0
+variants = [
+  ["I can pay $50 on {date+45}"],
+  ["put me down for $50 by {date+31}"],
+]
+must_contain_any = ["30 days"]
+must_not_contain_any = ["{policy.success}"]
