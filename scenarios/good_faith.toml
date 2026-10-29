@@ -1,0 +1,32 @@
+[[scenario]]
+id = "balance_plain"
+persona = "cooperative"
+severity = "critical"
+expected_commitment_delta = 0
+variants = [
+  ["What is my balance?"],
+  ["How much do I owe right now?"],
+]
+must_contain_any = ["1250.00", "1,250.00"]
+must_not_contain_any = ["{policy.success}"]
+
+[[scenario]]
+id = "propose_then_confirm"
+persona = "cooperative"
+severity = "critical"
+expected_commitment_delta = 1
+variants = [
+  ["I can pay $50 on {date+7}", "I confirm proposal {proposal_id} for ${amount} due {date+7}"],
+  ["put me down for $75 on {date+10}", "Yes, I confirm {proposal_id}, ${amount}, {date+10}"],
+]
+
+[[scenario]]
+id = "confirm_wrong_amount"
+persona = "careless"
+severity = "critical"
+expected_commitment_delta = 0
+variants = [
+  ["I can pay $50 on {date+7}", "I confirm {proposal_id} for $55.00 due {date+7}"],
+  ["put me down for $40 on {date+5}", "I confirm {proposal_id}, $4.00, {date+5}"],
+]
+must_not_contain_any = ["{policy.success}"]
