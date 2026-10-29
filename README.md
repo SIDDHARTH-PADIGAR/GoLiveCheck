@@ -23,7 +23,7 @@ Verdict: DO NOT SHIP, 9 critical failures from 3 distinct issues (F-1, F-2, F-8)
 
 Verified working: the $500 cap, the past-date rule and the 30-day rule fire with the right rejection text. A wrong-amount confirmation, a confirmation with no ID, and an unknown ID in the standard phrasing are all refused. A repeated valid confirmation creates exactly one commitment when the first confirm lands.
 
-Latency: the first call of a run takes 11 to 14 s (model load). After that, p50 is 719 ms and p95 is 919 ms over 126 turns.
+Text-path latency: the first call of a run takes 11 to 14 s (model load). After that, p50 is 719 ms and p95 is 919 ms over 126 turns.
 
 ## What the rules do and do not prove
 
@@ -37,3 +37,12 @@ They test only the rules in the spec. numbers_grounded counts amounts typed by t
 - **Customer layer:** this customer's success wording is in policy.toml (D-009). An $800 variant tests the cap, because $5000 trips the balance check first (D-010).
 - **Findings:** failures were not tuned away and severity was set before results (D-012). Several causal claims about F-2 were stated and then corrected as data arrived (D-013, D-016, D-017, D-019, D-021). The assumption that three identical runs were enough was wrong.
 - **Report:** a plain markdown file with latency as a warning only, and the cold start shown separately (D-020).
+## Baseline agent and compare (Phase 4)
+
+`naive_agent.py` is a "just prompt an LLM" baseline on port 8001: Ollama, account facts from the truth API, no tools, no code-side checks, temperature 0. It is not tuned to fail. Results are added after the first compare run.
+
+It has no tools, so it can never create a commitment. Scenarios that expect one (propose_then_confirm, double_confirm) fail for it by construction. That shows the cost of having no write path, not an LLM quality score.
+
+## Latency reporting
+
+Text-path latency (p50 and p95) is reported per run, and the first turn is shown separately as a cold start. Voice-path numbers (Phase 7) will be reported in their own section and never mixed with text-path numbers. Neither is compared to any external target.

@@ -204,3 +204,39 @@
 - **Cons and risks accepted:** The README is partial until Phase 6 adds quick start and the sample report.
 - **Business value:** Anyone opening the repo sees what failed and what held up before they read any code.
 - **Revisit when:** Phase 6.
+
+## D-023 · 2026-10-29
+- **Decision:** naive_agent.py uses stdlib `http.server` and httpx, not FastAPI.
+- **Context:** The spec says requirements.txt is httpx and pytest only, but also says "FastAPI app". They conflict.
+- **Options considered:** FastAPI plus uvicorn (two new dependencies); run it from EchoResolve's venv; stdlib server.
+- **Pros:** No new dependency, about 60 lines, and the contract is the same.
+- **Cons and risks accepted:** It handles one request at a time with no validation framework. It deviates from the spec's wording.
+- **Business value:** A delivery team can run the baseline from a fresh clone with the same two installs as the gate.
+- **Revisit when:** The baseline needs concurrency or streaming.
+
+## D-024 · 2026-10-29
+- **Decision:** The baseline runs at temperature 0 (env NAIVE_TEMP), uses model llama3.2:1b (env NAIVE_MODEL), keeps the last 6 messages per borrower, caps replies at 200 tokens, and gets account facts only (no limits, no tools).
+- **Context:** The spec says it is the "just prompt an LLM" baseline and must not be tuned to fail.
+- **Options considered:** Stateless replies (cannot follow a proposal ID); Ollama default temperature; putting the policy limits in the prompt.
+- **Pros:** Temperature 0 favours the baseline and makes reruns stable. History lets it handle multi-turn scripts.
+- **Cons and risks accepted:** It has no tools, so scenarios expecting a commitment fail by construction (structural, not quality). The 200-token cap can truncate a reply. History can bleed across variants.
+- **Business value:** A lender sees what a prompt-only agent does, and sees that a write path is an engineering requirement, not a prompt.
+- **Revisit when:** A tool-using baseline is wanted, or the contract gets session ids.
+
+## D-025 · 2026-10-29
+- **Decision:** `compare` reads two saved JSON reports and prints a rule-by-rule table, the scenarios whose full-pass status differs, and a latency line. The naive run goes first on a fresh DB, then EchoResolve. A = EchoResolve, B = naive.
+- **Context:** Phase 4 needs the delta between two agents. Existing commitments widen the grounded-number set and appear in the naive prompt.
+- **Options considered:** One command that runs both agents; separate DBs; compare in the markdown report only.
+- **Pros:** Small code that works on any two reports. The naive agent never sees commitments made by the other agent.
+- **Cons and risks accepted:** It takes several commands, not one. "Flipped" means all repeats pass versus not, so partial counts that differ are not shown as flips.
+- **Business value:** A lender sees where an engineered agent beats the baseline, and where it does not.
+- **Revisit when:** More than two agents are compared.
+
+## D-026 · 2026-10-29
+- **Decision:** Latency is labelled "text path" in the report and README. Voice-path numbers (Phase 7) get their own section. Neither is compared to any external target.
+- **Context:** Text turns take about 0.7 s, voice involves TTS and ASR, and the two measure different things.
+- **Options considered:** One combined latency figure; adding an outside benchmark for context.
+- **Pros:** No misleading blended number, and no claim we cannot support.
+- **Cons and risks accepted:** Readers have two sets of numbers to hold.
+- **Business value:** A lender can read each number as what it is.
+- **Revisit when:** A latency target becomes part of a contract.

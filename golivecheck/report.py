@@ -44,7 +44,7 @@ def to_markdown(rep, budget=5000):
         L.append(f"| {s}#{v} | {p} | {len(rs) - len(bad)}/{len(rs)} | "
                  f"{'FAIL' if bad else 'pass'} | {cell(ex)} |")
     warn = "WARN" if pct(ms, 95) > budget else "ok"
-    L += ["", "## Latency (warn only, never fails the gate)", "",
+    L += ["", "## Latency, text path (warn only, never fails the gate)", "",
           f"- All turns ({len(ms)}): p50 {pct(ms, 50)} ms, p95 {pct(ms, 95)} ms, max {max(ms, default=0)} ms [{warn}, budget {budget} ms]",
           f"- Excluding first turn (cold start): p50 {pct(warm, 50)} ms, p95 {pct(warm, 95)} ms",
           "", "---",

@@ -13,7 +13,7 @@ from pathlib import Path
 import httpx
 
 from golivecheck import graders as g
-from golivecheck.report import to_markdown
+from golivecheck.report import pct, to_markdown
 
 _UUID = re.compile(r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b", re.I)
 
@@ -146,6 +146,41 @@ def cmd_run(args):
     return 1 if crit else 0
 
 
+def rule_counts(rep):
+    c = {}
+    for r in rep["runs"]:
+        for f in r["findings"]:
+            c.setdefault(f["rule"], [0, 0])[0 if f["passed"] else 1] += 1
+    return c
+
+
+def latency(rep):
+    ms = [m for r in rep["runs"] for m in r.get("ms", [])][1:]  # skip first turn (cold start)
+    return f"p50 {pct(ms, 50)} ms, p95 {pct(ms, 95)} ms ({len(ms)} turns)"
+
+
+def cmd_compare(args):
+    a, b = (json.loads(Path(p).read_text(encoding="utf-8")) for p in (args.a, args.b))
+    ca, cb = rule_counts(a), rule_counts(b)
+    out = [f"A = {a['agent']}: {a['verdict']}, {a['critical_failures']} critical",
+           f"B = {b['agent']}: {b['verdict']}, {b['critical_failures']} critical", "",
+           f"{'rule':<22}{'A pass/fail':>13}{'B pass/fail':>13}{'fail delta B-A':>16}"]
+    for rule in sorted(set(ca) | set(cb)):
+        pa, fa = ca.get(rule, [0, 0])
+        pb, fb = cb.get(rule, [0, 0])
+        sa, sb = f"{pa}/{fa}", f"{pb}/{fb}"
+        out.append(f"{rule:<22}{sa:>13}{sb:>13}{fb - fa:>+16}")
+    ok = lambda s: s.split("/")[0] == s.split("/")[1]
+    pa, pb = a.get("pass_counts", {}), b.get("pass_counts", {})
+    flips = [(k, pa[k], pb[k]) for k in pa if k in pb and ok(pa[k]) != ok(pb[k])]
+    out += ["", "Scenarios that flipped (full pass vs not):"]
+    out += [f"  {k}: A {x} -> B {y}  ({'B worse' if ok(x) else 'B better'})" for k, x, y in flips] or ["  none"]
+    out.append(f"  unchanged: {sum(1 for k in pa if k in pb) - len(flips)}")
+    out += ["", f"Text-path latency, first turn excluded: A {latency(a)}; B {latency(b)}"]
+    print("\n".join(out))
+    return 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="golivecheck.run")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -158,7 +193,11 @@ def main(argv=None):
     r.add_argument("--scenarios", default="scenarios")
     r.add_argument("--only", nargs="*")
     r.add_argument("--repeat", type=int, default=1)
-    return cmd_run(ap.parse_args(argv))
+    c = sub.add_parser("compare")
+    c.add_argument("a")
+    c.add_argument("b")
+    args = ap.parse_args(argv)
+    return cmd_run(args) if args.cmd == "run" else cmd_compare(args)
 
 
 if __name__ == "__main__":
