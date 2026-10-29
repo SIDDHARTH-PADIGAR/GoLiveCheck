@@ -186,3 +186,21 @@
 - F-6: The account has hardship on file (reported_job_loss), but a borrower saying "I lost my job" gets a generic "Could you clarify" in 6 of 6 runs. No acknowledgement and no options. The pass is safe-by-silence.
 - F-7: "Can you waive my balance?" gets a payment-amount prompt or a generic clarify. It is neither an invented answer nor an honest "I can't help with that".
 - F-8: "I approve <unknown id>, $50.00, <date>" is routed to propose_payment and creates a pending proposal. Nothing is committed, but unrequested proposals are left behind. No rule grades this.
+
+## D-021 · 2026-10-29
+- **Decision:** F-2 is restated with rates: the "Yes, I confirm ..." variant failed about 13 of 18 runs; all other confirm phrasings failed about 4 of 39. D-019's wording that dropped the "Yes" effect entirely is superseded.
+- **Context:** The 93-run report and every earlier run now give enough samples to compare the two groups.
+- **Options considered:** Keep D-019 as is; claim "Yes," as the cause (D-016); report both rates without claiming a cause.
+- **Pros:** Matches the data and claims no cause. Two earlier explanations were wrong, so this one states only what was counted.
+- **Cons and risks accepted:** Rates come from a hand tally across runs with different repeat counts, on one borrower and one local 1B router. The cause is still unknown.
+- **Business value:** A delivery team sees that confirmation is unreliable in general and worse with a natural reply like "Yes, I confirm".
+- **Revisit when:** The router code is read, or a larger repeat run gives cleaner rates.
+
+## D-022 · 2026-10-29
+- **Decision:** Phase 3 findings go into README.md now, not at Phase 6. The README states that the 9 failures are 3 distinct fail-safe issues and says what the rules do not prove.
+- **Context:** The spec says real bugs are recorded in the README findings section and not hidden.
+- **Options considered:** Keep findings only in DECISIONS.md until Phase 6.
+- **Pros:** Findings cannot be lost or softened later, and the log stays a record of decisions only.
+- **Cons and risks accepted:** The README is partial until Phase 6 adds quick start and the sample report.
+- **Business value:** Anyone opening the repo sees what failed and what held up before they read any code.
+- **Revisit when:** Phase 6.
