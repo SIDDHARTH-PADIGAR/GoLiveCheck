@@ -330,3 +330,30 @@
 - **Cons and risks accepted:** The baseline looks better on over_limit than it behaved. The deterministic rules cannot judge agreement or invented offers in free text.
 - **Business value:** A lender is told plainly where a deterministic gate stops and human review of transcripts starts.
 - **Revisit when:** A scenario needs rejection text, which would be a customer-specific policy item.
+
+## D-035 · 2026-10-29
+- **Decision:** Replace the README with one rewritten file. History stays in git and DECISIONS.md.
+- **Context:** The README had grown by appending sections. It held three results tables, one of them superseded, and a withdrawn claim.
+- **Options considered:** Keep the appended sections with corrections on top; rewrite from scratch.
+- **Pros:** A first-time reader sees only current numbers, with the limits next to them.
+- **Cons and risks accepted:** A rewrite can drop a caveat. Corrections now live in git history and the decision log, and the README's decision summary lists them.
+- **Business value:** A lender reading the README sees one set of numbers and what they do not prove.
+- **Revisit when:** Phase 5 or Phase 7 results land.
+
+## D-036 · 2026-10-29
+- **Decision:** Commit reports/sample_echoresolve.json, reports/sample_echoresolve.md and reports/sample_naive.json (copies of the v2 run). The sample .md is pasted into the README by a script, not retyped.
+- **Context:** The spec asks for one committed sample. compare needs two JSON files, and the quick start should work with no servers.
+- **Options considered:** One sample only; commit every report; retype the table by hand.
+- **Pros:** A reader can run compare in seconds without Ollama. A script cannot make transcription errors.
+- **Cons and risks accepted:** Three extra files. They contain local URLs and proposal IDs from a synthetic database. Samples go stale when an agent or the policy changes, and the policy hash in the header shows which policy was used.
+- **Business value:** A lender can check the headline numbers in about a minute.
+- **Revisit when:** Phase 5 adds a second policy sample, or the policy changes.
+
+## D-037 · 2026-10-29
+- **Decision:** Publish after Phase 6, before Phase 5 and Phase 7. The README says both are not done and contains no strict-policy or voice results.
+- **Context:** The README has to be true on the day it goes public.
+- **Options considered:** Wait until every phase is finished; publish now with a Status section.
+- **Pros:** Public sooner, and each later phase is a visible update.
+- **Cons and risks accepted:** Early readers see the customer-policy story and the voice test as planned, not delivered. The README needs editing again after Phase 5 and Phase 7.
+- **Business value:** No unproven claim goes public.
+- **Revisit when:** Phase 5 and Phase 7 are done.
