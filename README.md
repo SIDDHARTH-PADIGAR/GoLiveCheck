@@ -105,12 +105,3 @@ Text path only, local CPU, first turn excluded. EchoResolve: p50 683 ms, p95 817
 ## Honest history
 
 The harness has been wrong before, and it is in the log. Early on, a grading rule depended on leftover database state. The baseline's memory leaked between scenarios and inflated its failures from 72 to 119. The first success-phrase list was too narrow and let the baseline claim "payment processed" without being flagged. Each was found, fixed, and the affected numbers were rerun. I also withdrew a wrong explanation for F-2 twice before landing on the current one. Every non-trivial decision, with options, downsides and business value, is in [DECISIONS.md](DECISIONS.md).
-
-## Status
-
-Done: graders, runner, 14 scenarios, reports, baseline, compare, this README.
-
-Not done yet:
-
-- A second customer policy run. EchoResolve's limits are hard-coded, so I expect it to ignore a stricter policy. If it does, that is a finding.
-- A voice test: render amounts with Piper, transcribe with faster-whisper, report the number error rate. A one-phrase spike worked, but there is no measured rate yet. Until then this repo says nothing about the voice path.
