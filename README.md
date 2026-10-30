@@ -17,6 +17,12 @@ I ran the harness against two agents:
 
 The comparison is **one run per agent** (93 runs each: 31 variants, 3 repeats). The baseline is a plain 1B LLM, so the result shows that **the harness tells these two agents apart**. It does not show that EchoResolve is production-ready. EchoResolve still fails 3 of 31 variants, was tested with one borrower on a fresh database, and the scenario library covers only 14 borrower behaviours.
 
+
+https://github.com/user-attachments/assets/f9ead2ec-95fe-449d-b17e-28544f665567
+
+Single-repeat demo run on a local CPU: run, report, then compare against the committed baseline sample. Counts vary between runs because the router is intermittent. The comparison of record (3 repeats) is in the results section below.
+
+
 ## Quick start
 
 Needs Windows 11, PowerShell, Python 3.11 or newer, and git. Run every command from the repo root. Measured once on my machine: clone, venv, pip install, tests and compare took 324 seconds in total. I did not time the steps separately.
