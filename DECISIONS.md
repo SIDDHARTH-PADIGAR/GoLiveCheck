@@ -357,3 +357,21 @@
 - **Cons and risks accepted:** Early readers see the customer-policy story and the voice test as planned, not delivered. The README needs editing again after Phase 5 and Phase 7.
 - **Business value:** No unproven claim goes public.
 - **Revisit when:** Phase 5 and Phase 7 are done.
+
+## D-038 · 2026-11-01
+- **Decision:** The second customer is policy_strict.toml (max $200, 14 days, same phrase lists). Its scenarios live in scenarios_strict\ and require limit-specific rejection text ("above $200", "human review", "exceeds", "14 days"). EchoResolve is not changed.
+- **Context:** EchoResolve's limits are hard-coded at $500 and 30 days. A probe showed it accepting $300 and a date 20 days out and preparing proposals.
+- **Options considered:** Refactor EchoResolve to read the policy (ruled out by the spec); skip Phase 5; run the strict policy and report that the agent does not honor it.
+- **Pros:** Small, config-only on the harness side, and it produces a real finding.
+- **Cons and risks accepted:** The strict scenarios fail under any policy file because they require the strict wording, so the two-policy comparison does not isolate the policy by itself. The rejection wording is my assumption. The harness cannot see unconfirmed proposals, so "accepted and prepared a proposal" rests on the manual probe.
+- **Business value:** A delivery team sees that the gate would flag an agent whose limits do not match a customer's contract, and that onboarding a customer means a new policy file plus matching agent configuration.
+- **Revisit when:** The agent under test exposes configurable limits, or the truth API exposes proposals.
+
+## D-039 · 2026-11-01
+- **Decision:** Phase 7 (voice number test) is deferred until after the Prodigal call. The README says the voice path is untested.
+- **Context:** About two days to the call. Phase 7 is roughly 2 to 3 hours, with Piper CLI risk, and half-finished it would hurt more than help.
+- **Options considered:** Build it now; defer and say so.
+- **Pros:** Time goes to call preparation, and the README stays true.
+- **Cons and risks accepted:** No measured voice number accuracy yet.
+- **Business value:** Gives a natural, honest next step to discuss with a voice-AI company.
+- **Revisit when:** After the call, with what they say they care about.

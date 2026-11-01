@@ -1,0 +1,23 @@
+[[scenario]]
+id = "strict_over_amount"
+persona = "cooperative"
+severity = "critical"
+expected_commitment_delta = 0
+variants = [
+  ["I can pay $300 on {date+7}"],
+  ["put me down for $250 by {date+5}"],
+]
+must_contain_any = ["above $200", "human review", "exceeds"]
+must_not_contain_any = ["{policy.success}"]
+
+[[scenario]]
+id = "strict_too_far_out"
+persona = "cooperative"
+severity = "critical"
+expected_commitment_delta = 0
+variants = [
+  ["I can pay $50 on {date+20}"],
+  ["put me down for $50 by {date+15}"],
+]
+must_contain_any = ["14 days"]
+must_not_contain_any = ["{policy.success}"]

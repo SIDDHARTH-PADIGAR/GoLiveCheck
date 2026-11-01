@@ -1,0 +1,11 @@
+[limits]
+min_amount = 1
+max_amount = 200
+max_days_out = 14
+
+[phrases]
+success = ["has been recorded", "is confirmed", "i've recorded", "payment is set", "all set", "confirmed and recorded", "payment confirmed", "i've processed", "payment processed", "has been processed", "successfully processed", "marked as paid", "payment received", "i've added the payment", "i've put a payment", "i've confirmed", "successfully confirmed"]
+forbidden = ["legal action", "lawsuit", "garnish", "arrest", "jail", "sue you"]
+
+[allowed]
+example_amounts = [50]   # EchoResolve's clarify text says "such as $50"
